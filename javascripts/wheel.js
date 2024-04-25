@@ -1,23 +1,38 @@
-var students = [
-  {name: 'Alfred'},
-  {name: 'Angel'},
-  {name: 'Asma'},
-  {name: 'Aswad'},
-  {name: 'Chris Carpio'},
-  {name: 'Chris Gomez'},
-  {name: 'David'},
-  {name: 'Edgar'},
-  {name: 'Eyerin'},
-  {name: 'Ian'},
-  {name: 'Jereny'},
-  {name: 'Joshua'},
-  {name: 'Mac'},
-  {name: 'Meylan'},
-  {name: 'Nestasia'},
-  {name: 'Randy'},
-  {name: 'Rashamel'},
-  {name: 'Sidney'}
-];
+let users = document.querySelectorAll('.names div');
+let students = [];
+let audio = new Audio('audio.mp3');
+let crowd = new Audio('crowd.mp3');
+(document.getElementsByTagName('section'))[0].addEventListener('click', function(){
+	audio.play();
+});
+
+document.querySelector('.img-container img').addEventListener('click', function(){
+	location.reload();
+});
+
+for (const user of users) {
+	students.push({name: user.innerHTML});
+}
+// var students = [
+//   {name: 'Alfred'},
+//   {name: 'Angel'},
+//   {name: 'Asma'},
+//   {name: 'Aswad'},
+//   {name: 'Chris Carpio'},
+//   {name: 'Chris Gomez'},
+//   {name: 'David'},
+//   {name: 'Edgar'},
+//   {name: 'Eyerin'},
+//   {name: 'Ian'},
+//   {name: 'Jereny'},
+//   {name: 'Joshua'},
+//   {name: 'Mac'},
+//   {name: 'Meylan'},
+//   {name: 'Nestasia'},
+//   {name: 'Randy'},
+//   {name: 'Rashamel'},
+//   {name: 'Sidney'}
+// ];
 
 var shuffle = function (o) {
   for (var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
@@ -106,7 +121,7 @@ var wheel = {
   spinStart: 0,
   timerDelay: 33,
   timerHandle: 0,
-  upTime: 1000,
+  upTime: 7000,
 
   spin: function () {
     // Start the wheel only if it's not already spinning
@@ -144,6 +159,23 @@ var wheel = {
 
     if (finished) {
       clearInterval(wheel.timerHandle);
+			audio.pause();
+			audio.currentTime = 0;
+			crowd.play();
+			setTimeout(() => {
+				crowd.pause();
+				crowd.currentTime = 0;
+			}, 3000);
+			var xhr = new XMLHttpRequest();
+			xhr.open("POST", 'removeUser.php', true);
+			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+			var params = {
+				name: document.querySelector('.winner').innerHTML,
+			};
+			var data = Object.keys(params).map(function(key) {
+				return encodeURIComponent(key) + '=' + encodeURIComponent(params[key]);
+			}).join('&');
+			xhr.send(data);
       wheel.timerHandle = 0;
       wheel.angleDelta = 0;
 
@@ -154,7 +186,7 @@ var wheel = {
      // Display RPM
      var rpm = (wheel.angleDelta * (1000 / wheel.timerDelay) * 60) / (Math.PI * 2);
      $('#counter').html( Math.round(rpm) + ' RPM' );
-     */
+    */
   },
 
   init: function (optionList) {
@@ -234,9 +266,10 @@ var wheel = {
     // Now draw the winning name
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillStyle = '#000000';
+    ctx.fillStyle = '#ffffff';
     ctx.font = '2em Arial';
     ctx.fillText(wheel.segments[i], centerX + size + 25, centerY);
+		document.querySelector('.winner').innerHTML = wheel.segments[i]
   },
 
   drawSegment: function (key, lastAngle, angle) {
@@ -289,9 +322,9 @@ var wheel = {
 
     ctx.lineWidth = 1;
     ctx.strokeStyle = '#000000';
-    ctx.textBaseline = 'middle';
-    ctx.textAlign = 'center';
-    ctx.font = '1.4em Arial';
+    ctx.textBaseline = 'bottom';
+    ctx.textAlign = 'middle';
+    ctx.font = '8px Arial';
 
     for (var i = 1; i <= len; i++) {
       var angle = PI2 * (i / len) + angleCurrent;
